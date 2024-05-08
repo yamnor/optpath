@@ -3,7 +3,8 @@
 ##
 
 require 'spliner'
-require 'molecule'
+
+require_relative 'molecule'
 
 ##
 #  Path Class
