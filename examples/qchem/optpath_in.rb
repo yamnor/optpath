@@ -2,7 +2,7 @@
 
 #PBS -q SMALL
 #PBS -N ethylene
-#PBS -l select=1:ncpus=16:mpiprocs=16:mem=20gb
+#PBS -l select=1:ncpus=12:mpiprocs=12:mem=48gb
 #PBS -l walltime=12:00:00
 
 ##
@@ -22,7 +22,7 @@ arg = {
   #
   stepsize:  1.0,
   maxstep:  30,
-  nnodes:   8,
+  nnodes:   12,
   node_dir: "node",
   node_log: "node.log.#{ENV['PBS_JOBID']}",
   path_dir: "path",
@@ -38,7 +38,7 @@ arg = {
   qm_input:   "qm.inp",
   qm_output:  "qm.out",
   qm_punch:   "qm.dat",
-  qm_ncpus:   2,
+  qm_ncpus:   1,
 }
 
 $LOAD_PATH << '/user1/scl9/yamnor/apl/optpath/lib'

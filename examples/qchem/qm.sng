@@ -4,7 +4,7 @@ __geom__
 $end
 
 $rem
-  JOBTYPE         sp
+  JOBTYPE         force
   EXCHANGE        bhhlyp
   BASIS           6-31G(d)
   SPIN_FLIP       true
