@@ -1,0 +1,14 @@
+%Chk=qm.chk
+%NProcShared=1
+%Mem=16GB
+#P RHF/3-21G Force IOp(99/10=6) Guess=Read
+
+SN2 MEP
+
+0 1
+__geom__
+
+
+
+
+

@@ -1,0 +1,24 @@
+%Chk=qm.chk
+%NProcShared=1
+%Mem=16GB
+#P RHF/3-21G IOp(99/10=6)
+
+SN2 MEP
+
+0 1
+__geom__
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

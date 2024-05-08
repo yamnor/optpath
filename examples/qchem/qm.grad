@@ -1,0 +1,19 @@
+$molecule
+0 3
+__geom__
+$end
+
+$rem
+  JOBTYPE         force
+  EXCHANGE        bhhlyp
+  BASIS           6-31G(d)
+  SPIN_FLIP       true
+  UNRESTRICTED    true
+  CIS_SINGLETS    true
+  CIS_TRIPLETS    false
+  CIS_N_ROOTS     3
+  CIS_STATE_DERIV 2
+  MAX_SCF_CYCLES  100
+  MAX_CIS_CYCLES  100
+  SYM_IGNORE      true
+$end
