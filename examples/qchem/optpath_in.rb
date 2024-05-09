@@ -1,4 +1,4 @@
-#!/user1/scl9/yamnor/apl/ruby/bin/ruby
+#!/usr/bin/ruby
 
 #PBS -q SMALL
 #PBS -N ethylene
@@ -38,7 +38,7 @@ arg = {
   qm_input:   "qm.inp",
   qm_output:  "qm.out",
   qm_punch:   "qm.dat",
-  qm_ncpus:   1,
+  qm_ncpus:   12,
 }
 
 $LOAD_PATH << '/user1/scl9/yamnor/apl/optpath/lib'
