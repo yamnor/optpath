@@ -23,6 +23,7 @@ engine:
   extra:
     input_filename: qchem.inp
     output_filename: qchem.out
+    qchem_scratch: workdir
 
 execution:
   mode: serial

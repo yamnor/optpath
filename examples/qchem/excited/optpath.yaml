@@ -27,6 +27,7 @@ engine:
     input_filename: qm.inp
     output_filename: qm.out
     grad_filename: GRAD
+    qchem_scratch: workdir
 
 execution:
   mode: serial

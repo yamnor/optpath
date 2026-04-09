@@ -7,11 +7,11 @@ path:
 
 optimizer:
   method: zero_temperature_string
-  step_size: 0.05
-  max_steps: 50
-  grad_tol: 1.0e-3
-  disp_tol: 1.0e-3
-  energy_tol: 1.0e-6
+  step_size: 0.01
+  max_steps: 20
+  grad_tol: 1.0e-1
+  disp_tol: 1.0e-1
+  energy_tol: 1.0e-3
 
 engine:
   type: qchem
@@ -24,10 +24,11 @@ engine:
     input_filename: qm.inp
     output_filename: qm.out
     grad_filename: GRAD
+    qchem_scratch: workdir
 
 execution:
-  mode: serial
-  max_concurrent_images: 1
+  mode: parallel_images
+  max_concurrent_images: 6
   threads_per_image: 1
 
 output:

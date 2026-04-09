@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import os
 import re
+import shutil
 import subprocess
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from pathlib import Path
@@ -16,8 +17,92 @@ from optpath.io.templates import render_template
 from optpath.utils.filesystem import ensure_dir
 from optpath.utils.units import hartree_per_bohr_to_ev_per_angstrom, hartree_to_ev
 
-_TOTAL_ENERGY_RE = re.compile(r"Total energy in the final basis set\s*=\s*(-?\d+\.\d+)")
+_TOTAL_ENERGY_FINAL_BASIS_RE = re.compile(
+    r"Total energy in the final basis set\s*=\s*([-+]?\d+\.\d+(?:[Ee][-+]?\d+)?)"
+)
+# Q-Chem 6.x often prints "Total energy =  -556.64645845" without "in the final basis set".
+_TOTAL_ENERGY_EQ_RE = re.compile(r"^\s*Total energy\s*=\s*([-+]?\d+\.\d+(?:[Ee][-+]?\d+)?)\s*$", re.MULTILINE)
 _EXCITED_STATE_RE = re.compile(r"Excited state\s+(\d+):.*?=\s*([-+]?\d+\.\d+)")
+
+
+def _promote_qchem_grad_file(workdir: Path, grad_name: str, dest: Path) -> None:
+    """If Q-Chem wrote GRAD under workdir/<scratch_id>/, copy it next to qm.out (dest)."""
+    if dest.exists():
+        return
+    candidates: list[Path] = []
+    for sub in workdir.iterdir():
+        if sub.is_dir():
+            p = sub / grad_name
+            if p.is_file():
+                candidates.append(p)
+    if not candidates:
+        return
+    candidates.sort(key=lambda p: p.stat().st_mtime, reverse=True)
+    shutil.copy2(candidates[0], dest)
+
+
+def _qchem_total_energy_ev(text: str) -> float | None:
+    m = _TOTAL_ENERGY_FINAL_BASIS_RE.search(text)
+    if m:
+        return hartree_to_ev(float(m.group(1)))
+    matches = list(_TOTAL_ENERGY_EQ_RE.finditer(text))
+    if matches:
+        return hartree_to_ev(float(matches[-1].group(1)))
+    return None
+
+
+def _parse_qchem_cartesian_gradient(text: str) -> np.ndarray | None:
+    """Parse Hartree/Bohr Cartesian gradient from standard output when GRAD is absent."""
+    markers = ("Gradient of SCF Energy", "Gradient of excited state energy")
+    start = -1
+    for m in markers:
+        pos = text.find(m)
+        if pos >= 0:
+            start = pos + len(m)
+            break
+    if start < 0:
+        return None
+    lines = text[start:].splitlines()
+    rows: list[list[float]] = []
+
+    def _is_header(parts: list[str]) -> bool:
+        return bool(parts) and all(re.fullmatch(r"-?\d+", p) is not None for p in parts)
+
+    i = 0
+    while i < len(lines):
+        raw = lines[i]
+        line = raw.strip()
+        if not line:
+            i += 1
+            continue
+        parts = line.split()
+        if _is_header(parts):
+            n = len(parts)
+            i += 1
+            block: list[list[float]] = []
+            for _ in range(3):
+                if i >= len(lines):
+                    return None
+                row_parts = lines[i].split()
+                i += 1
+                if len(row_parts) < n + 1:
+                    return None
+                try:
+                    block.append(
+                        [hartree_per_bohr_to_ev_per_angstrom(float(row_parts[j])) for j in range(1, n + 1)]
+                    )
+                except ValueError:
+                    return None
+            for j in range(n):
+                rows.append([block[0][j], block[1][j], block[2][j]])
+            continue
+        if "Max gradient" in line or "RMS gradient" in line or "Gradient time:" in line:
+            break
+        i += 1
+
+    if not rows:
+        return None
+    return np.array(rows, dtype=float)
 
 
 class QChemEngine:
@@ -73,6 +158,11 @@ def _qchem_worker(job: ImageJob, config: dict, context: RunContext) -> ImageResu
         input_path.write_text(rendered, encoding="utf-8")
         command = config.get("command") or f"qchem -nt {context.threads_per_image} {input_name} {output_name}"
         env = os.environ.copy()
+        extra = config.get("extra") or {}
+        # Q-Chem writes GRAD (and other scratch) under $QCSCRATCH; point it at this job dir so
+        # files stay with qm.out. See engine.extra.qchem_scratch in example YAML.
+        if extra.get("qchem_scratch") == "workdir":
+            env["QCSCRATCH"] = str(workdir.resolve())
         completed = subprocess.run(
             command,
             cwd=workdir,
@@ -86,6 +176,7 @@ def _qchem_worker(job: ImageJob, config: dict, context: RunContext) -> ImageResu
             (workdir / "stdout.log").write_text(completed.stdout, encoding="utf-8")
         if completed.stderr:
             (workdir / "stderr.log").write_text(completed.stderr, encoding="utf-8")
+        _promote_qchem_grad_file(workdir, grad_name, grad_path)
         result = parse_qchem_output(output_path, grad_path, image_index=job.image_index, selected_root=job.state_spec.get("root"))
         if completed.returncode != 0:
             result.success = False
@@ -112,15 +203,14 @@ def _qchem_worker(job: ImageJob, config: dict, context: RunContext) -> ImageResu
 
 def parse_qchem_output(output_path: Path, grad_path: Path, image_index: int, selected_root: int | None) -> ImageResult:
     text = output_path.read_text(encoding="utf-8")
-    energy = None
-    match = _TOTAL_ENERGY_RE.search(text)
-    if match:
-        energy = hartree_to_ev(float(match.group(1)))
+    energy = _qchem_total_energy_ev(text)
     roots = [
         {"root": int(root), "excitation_energy_ev": float(value)}
         for root, value in _EXCITED_STATE_RE.findall(text)
     ]
     grad_energy, gradient = parse_qchem_grad_file(grad_path)
+    if gradient is None:
+        gradient = _parse_qchem_cartesian_gradient(text)
     if grad_energy is not None:
         energy = grad_energy
     forces = None if gradient is None else -gradient

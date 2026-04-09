@@ -36,6 +36,7 @@ run/
 iter_*/
 checkpoints/
 trajectories/
+*.job
 
 # Gaussian
 *.chk
