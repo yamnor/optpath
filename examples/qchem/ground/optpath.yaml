@@ -28,11 +28,12 @@ engine:
 
 execution:
   mode: parallel_images
+  total_slots: 10
   max_concurrent_images: 6
   threads_per_image: 1
 
 output:
-  run_dir: run-qchem-ground
+  run_dir: run-qchem
   checkpoint_every: 1
   write_xyz_every: 1
   write_table_every: 1
