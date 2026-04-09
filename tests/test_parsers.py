@@ -53,6 +53,33 @@ def test_promote_qchem_grad_file_keeps_existing_dest(tmp_path: Path) -> None:
     assert dest.read_text() == "keep\n"
 
 
+def test_parse_qchem_output_full_analytical_gradient_tddft(tmp_path: Path) -> None:
+    """TDDFT/TDA force jobs often print 'Full Analytical Gradient' (cclib gradient_headers)."""
+    out = tmp_path / "qm.out"
+    out.write_text(
+        """
+ Total energy =  -76.00000000
+ Excited state   1: excitation energy (eV) =    3.1000
+ Total energy for state 1: -75.886000000000
+ Calculating analytic gradient
+ Full Analytical Gradient
+            1           2
+    1   0.0100000000  -0.0200000000
+    2   0.0300000000   0.0400000000
+    3   0.0500000000   0.0600000000
+ Max gradient component =       1.000E-02
+ Thank you very much for using Q-Chem.  Have a nice day.
+""",
+        encoding="utf-8",
+    )
+    missing_grad = tmp_path / "GRAD"
+    result = parse_qchem_output(out, missing_grad, image_index=0, selected_root=1)
+    assert result.success
+    assert result.energy is not None
+    assert result.forces is not None
+    assert result.forces.shape == (2, 3)
+
+
 def test_parse_qchem_output_qchem6_style_without_grad_file(tmp_path: Path) -> None:
     """Q-Chem 6.x prints Total energy = ... and may not write GRAD in the run directory."""
     out = tmp_path / "qm.out"

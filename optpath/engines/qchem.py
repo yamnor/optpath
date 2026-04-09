@@ -22,6 +22,10 @@ _TOTAL_ENERGY_FINAL_BASIS_RE = re.compile(
 )
 # Q-Chem 6.x often prints "Total energy =  -556.64645845" without "in the final basis set".
 _TOTAL_ENERGY_EQ_RE = re.compile(r"^\s*Total energy\s*=\s*([-+]?\d+\.\d+(?:[Ee][-+]?\d+)?)\s*$", re.MULTILINE)
+# TDDFT/TDA/RPA: "Total energy for state 1: -382.167872200685" (Hartree)
+_TOTAL_ENERGY_FOR_STATE_RE = re.compile(
+    r"Total energy for state\s+(\d+)\s*:\s*([-+]?\d+\.\d+(?:[Ee][-+]?\d+)?)"
+)
 _EXCITED_STATE_RE = re.compile(r"Excited state\s+(\d+):.*?=\s*([-+]?\d+\.\d+)")
 
 
@@ -51,15 +55,33 @@ def _qchem_total_energy_ev(text: str) -> float | None:
     return None
 
 
+def _qchem_state_total_energy_ev(text: str, state_1based: int) -> float | None:
+    """TDDFT/TDA/RPA total energy (Hartree) for a given state, if printed."""
+    for m in _TOTAL_ENERGY_FOR_STATE_RE.finditer(text):
+        if int(m.group(1)) == state_1based:
+            return hartree_to_ev(float(m.group(2)))
+    return None
+
+
 def _parse_qchem_cartesian_gradient(text: str) -> np.ndarray | None:
     """Parse Hartree/Bohr Cartesian gradient from standard output when GRAD is absent."""
-    markers = ("Gradient of SCF Energy", "Gradient of excited state energy")
+    # cclib: TDDFT/CIS/etc. often use "Full Analytical Gradient"; see qchemparser.py gradient_headers.
+    markers = (
+        "Gradient of SCF Energy",
+        "Gradient of excited state energy",
+        "Full Analytical Gradient",
+        "Gradient of TDDFT energy",
+        "Gradient of TDA energy",
+        "Gradient of CIS energy",
+        "Gradient of RPA energy",
+    )
     start = -1
     for m in markers:
-        pos = text.find(m)
+        pos = text.rfind(m)
         if pos >= 0:
-            start = pos + len(m)
-            break
+            cand = pos + len(m)
+            if cand > start:
+                start = cand
     if start < 0:
         return None
     lines = text[start:].splitlines()
@@ -204,6 +226,10 @@ def _qchem_worker(job: ImageJob, config: dict, context: RunContext) -> ImageResu
 def parse_qchem_output(output_path: Path, grad_path: Path, image_index: int, selected_root: int | None) -> ImageResult:
     text = output_path.read_text(encoding="utf-8")
     energy = _qchem_total_energy_ev(text)
+    if selected_root is not None:
+        state_e = _qchem_state_total_energy_ev(text, selected_root)
+        if state_e is not None:
+            energy = state_e
     roots = [
         {"root": int(root), "excitation_energy_ev": float(value)}
         for root, value in _EXCITED_STATE_RE.findall(text)
