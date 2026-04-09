@@ -42,7 +42,7 @@ Documentation = "https://github.com/yamnor/optpath/blob/main/development/docs/us
 Issues = "https://github.com/yamnor/optpath/issues"
 
 [project.scripts]
-string = "optpath.cli:main"
+optpath = "optpath.cli:main"
 
 [tool.setuptools.package-data]
 optpath = ["py.typed"]
@@ -50,4 +50,3 @@ optpath = ["py.typed"]
 [tool.setuptools.packages.find]
 include = ["optpath*"]
 exclude = ["archive*"]
-

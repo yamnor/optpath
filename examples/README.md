@@ -33,8 +33,8 @@ Input is generated from a template file (`qm.grad`) by substituting `__geom__` w
 ### Ground state — RHF/3-21G, SN2 reaction
 
 ```bash
-string run examples/gaussian/ground/optpath.yaml
-string inspect examples/gaussian/ground/run-gaussian-ground
+optpath run examples/gaussian/ground/optpath.yaml
+optpath inspect examples/gaussian/ground/run-gaussian-ground
 ```
 
 > `g16` must be in `PATH`. Override the command with `engine.command` if needed.
@@ -42,8 +42,8 @@ string inspect examples/gaussian/ground/run-gaussian-ground
 ### Excited state — TD-B3LYP/6-31G*, ethylene
 
 ```bash
-string run examples/gaussian/excited/optpath.yaml
-string inspect examples/gaussian/excited/run-gaussian-excited
+optpath run examples/gaussian/excited/optpath.yaml
+optpath inspect examples/gaussian/excited/run-gaussian-excited
 ```
 
 > `Root=` and `NStates=` in the template must match `engine.root` / `engine.nroots` in the config (they are not auto-substituted). The TDDFT energy is parsed from the `Total Energy, E(TD-HF/TD-DFT)` line.
@@ -57,15 +57,15 @@ The `$molecule` geometry block is substituted via `__geom__`. Charge and multipl
 ### Ground state — B3LYP/6-31G*, SN2 reaction
 
 ```bash
-string run examples/qchem/ground/optpath.yaml
-string inspect examples/qchem/ground/run-qchem-ground
+optpath run examples/qchem/ground/optpath.yaml
+optpath inspect examples/qchem/ground/run-qchem-ground
 ```
 
 ### Excited state — TDDFT/6-31G*, ethylene
 
 ```bash
-string run examples/qchem/excited/optpath.yaml
-string inspect examples/qchem/excited/run-qchem-excited
+optpath run examples/qchem/excited/optpath.yaml
+optpath inspect examples/qchem/excited/run-qchem-excited
 ```
 
 > `qchem` must be in `PATH`. `CIS_STATE_DERIV` in the template must match `engine.root`.
@@ -79,15 +79,15 @@ No template file is needed. Requires `pyscf` (`pip install -e ".[pyscf]"`).
 ### Ground state — B3LYP/6-31G*, SN2 reaction
 
 ```bash
-string run examples/pyscf/ground/optpath.yaml
-string inspect examples/pyscf/ground/run-pyscf-ground
+optpath run examples/pyscf/ground/optpath.yaml
+optpath inspect examples/pyscf/ground/run-pyscf-ground
 ```
 
 ### Excited state — TDA/6-31G*, ethylene
 
 ```bash
-string run examples/pyscf/excited/optpath.yaml
-string inspect examples/pyscf/excited/run-pyscf-excited
+optpath run examples/pyscf/excited/optpath.yaml
+optpath inspect examples/pyscf/excited/run-pyscf-excited
 ```
 
 > Use `engine.method: pyscf_td` for TDA (or `tddft` for TDDFT). `engine.nroots` and `engine.root` (1-based) are required.
@@ -97,8 +97,8 @@ string inspect examples/pyscf/excited/run-pyscf-excited
 **System**: H₂C=O (4 QM atoms) surrounded by fixed MM point charges representing a nearby water molecule. The MEP explores C=O bond elongation (1.20 → 1.35 Å) under the electrostatic influence of the MM environment.
 
 ```bash
-string run examples/pyscf/qmmm/optpath.yaml
-string inspect examples/pyscf/qmmm/run-pyscf-qmmm
+optpath run examples/pyscf/qmmm/optpath.yaml
+optpath inspect examples/pyscf/qmmm/run-pyscf-qmmm
 ```
 
 **Key files**:

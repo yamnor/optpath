@@ -114,7 +114,7 @@ def cmd_interp(args: argparse.Namespace) -> int:
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(prog="string")
+    parser = argparse.ArgumentParser(prog="optpath")
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     run_parser = subparsers.add_parser("run")

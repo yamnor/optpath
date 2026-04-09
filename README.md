@@ -50,7 +50,7 @@ pip install -e ".[dev,pyscf]"
 ### 1. Generate an initial path by Z-matrix interpolation
 
 ```bash
-string interp reactant.xyz product.xyz path.xyz --nimages 8
+optpath interp reactant.xyz product.xyz path.xyz --nimages 8
 ```
 
 ### 2. Create a config file (`optpath.yaml`)
@@ -85,13 +85,13 @@ output:
 ### 3. Run
 
 ```bash
-string run optpath.yaml
+optpath run optpath.yaml
 ```
 
 ### 4. Inspect results
 
 ```bash
-string inspect run
+optpath inspect run
 ```
 
 ---
@@ -100,11 +100,11 @@ string inspect run
 
 | Command | Description |
 |---|---|
-| `string interp <reactant> <product> <output>` | Generate initial path by Z-matrix interpolation |
-| `string run <config>` | Run MEP optimization |
-| `string singlepoint <config>` | Single-point evaluation (for testing setup) |
-| `string resume <config>` | Resume from the latest checkpoint |
-| `string inspect <run_dir>` | Show convergence status |
+| `optpath interp <reactant> <product> <output>` | Generate initial path by Z-matrix interpolation |
+| `optpath run <config>` | Run MEP optimization |
+| `optpath singlepoint <config>` | Single-point evaluation (for testing setup) |
+| `optpath resume <config>` | Resume from the latest checkpoint |
+| `optpath inspect <run_dir>` | Show convergence status |
 
 ---
 
