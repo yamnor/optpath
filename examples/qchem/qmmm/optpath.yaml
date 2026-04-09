@@ -7,11 +7,11 @@ path:
 
 optimizer:
   method: zero_temperature_string
-  step_size: 0.05
+  step_size: 0.01
   max_steps: 50
-  grad_tol: 1.0e-3
-  disp_tol: 1.0e-3
-  energy_tol: 1.0e-6
+  grad_tol: 1.0e-1
+  disp_tol: 1.0e-1
+  energy_tol: 1.0e-3
 
 engine:
   type: qchem
@@ -26,8 +26,9 @@ engine:
     qchem_scratch: workdir
 
 execution:
-  mode: serial
-  max_concurrent_images: 1
+  mode: parallel_images
+  total_slots: 10
+  max_concurrent_images: 6
   threads_per_image: 1
 
 qmmm:
@@ -38,7 +39,7 @@ qmmm:
   vdw_repulsion: true          # add UFF-based LJ repulsion to prevent over-polarization
 
 output:
-  run_dir: run-qchem-qmmm
+  run_dir: run-qchem
   checkpoint_every: 1
   write_xyz_every: 1
   write_table_every: 1
