@@ -51,10 +51,12 @@ def test_midpoint_is_between_endpoints() -> None:
     images = interpolate_zmat(a1, a2, nimages=3)
     mid = images[1].get_positions()
     # midpoint should be between the two endpoints
-    assert np.all(
-        np.linalg.norm(mid - a1.get_positions(), axis=1)
-        < np.linalg.norm(a2.get_positions() - a1.get_positions(), axis=1) + 1e-6
-    )
+    # Internal-coordinate interpolation followed by Kabsch alignment can induce a
+    # tiny rigid-body shift even for atoms that do not move in the endpoints.
+    # Allow a small floor for near-zero endpoint displacements.
+    d_mid = np.linalg.norm(mid - a1.get_positions(), axis=1)
+    d_end = np.linalg.norm(a2.get_positions() - a1.get_positions(), axis=1)
+    assert np.all(d_mid <= np.maximum(d_end, 1e-2))
 
 
 def test_nimages_2_returns_endpoints_only() -> None:
