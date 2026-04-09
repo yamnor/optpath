@@ -1,0 +1,13 @@
+%NProcShared=1
+%Mem=4GB
+#P RHF/3-21G Force
+
+SN2 MEP
+
+0 1
+__geom__
+
+
+
+
+

@@ -1,0 +1,35 @@
+path:
+  initial_xyz: path.xyz
+  nimages: 8
+  freeze_endpoints: true
+  reparameterization: cubic
+  coordinate_mode: all_atoms
+
+optimizer:
+  method: zero_temperature_string
+  step_size: 0.05
+  max_steps: 50
+  grad_tol: 1.0e-3
+  disp_tol: 1.0e-3
+  energy_tol: 1.0e-6
+
+engine:
+  type: pyscf
+  method: pyscf_td     # triggers TDA/TDDFT in PySCF engine
+  basis: 6-31g*
+  charge: 0
+  multiplicity: 1
+  nroots: 3            # number of excited states to compute
+  root: 1              # target excited state (1-based)
+  state_follow: true
+
+execution:
+  mode: serial
+  max_concurrent_images: 1
+  threads_per_image: 1
+
+output:
+  run_dir: run-pyscf-excited
+  checkpoint_every: 1
+  write_xyz_every: 1
+  write_table_every: 1

@@ -1,0 +1,56 @@
+# Build / packaging
+archive/
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# Test / CI
+.pytest_cache/
+.coverage
+htmlcov/
+
+# macOS
+.DS_Store
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+.claude/
+
+# Development-only
+development/
+
+# optpath calculation outputs
+run-*/
+run/
+iter_*/
+checkpoints/
+trajectories/
+
+# Gaussian
+*.chk
+*.fchk
+Gfchk
+*.rwf
+*.d2e
+*.int
+*.skr
+
+# Q-Chem
+GFCHK
+pathtable
+qchem_*.out
+
+# Generic engine outputs (exclude test fixtures)
+*.out
+!tests/fixtures/**/*.out

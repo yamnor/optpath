@@ -1,0 +1,12 @@
+%NProcShared=1
+%Mem=4GB
+#P B3LYP/6-31G* Force Charge
+
+H2C=O QM/MM MEP
+
+0 1
+__geom__
+
+__charges__
+
+

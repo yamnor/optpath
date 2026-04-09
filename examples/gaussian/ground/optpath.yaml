@@ -1,0 +1,42 @@
+path:
+  initial_xyz: path.xyz
+  nimages: 8
+  freeze_endpoints: true
+  reparameterization: cubic
+  coordinate_mode: all_atoms
+
+optimizer:
+  method: zero_temperature_string
+  step_size: 0.05
+  max_steps: 50
+  grad_tol: 1.0e-3
+  disp_tol: 1.0e-3
+  energy_tol: 1.0e-6
+
+engine:
+  type: gaussian
+  method: hf
+  basis: 3-21g
+  charge: 0
+  multiplicity: 1
+  template: qm.grad
+  extra:
+    input_filename: gau.inp
+    output_filename: gau.out
+
+execution:
+  mode: serial
+  max_concurrent_images: 1
+  threads_per_image: 1
+
+qmmm:
+  enabled: false
+  qm_atoms: []
+  update_region_only: false
+
+output:
+  run_dir: run-gaussian
+  checkpoint_every: 1
+  write_xyz_every: 1
+  write_table_every: 1
+

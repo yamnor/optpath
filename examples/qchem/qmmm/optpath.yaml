@@ -1,0 +1,43 @@
+path:
+  initial_xyz: path.xyz
+  nimages: 8
+  freeze_endpoints: true
+  reparameterization: cubic
+  coordinate_mode: qm_region_only  # optimize QM atoms only
+
+optimizer:
+  method: zero_temperature_string
+  step_size: 0.05
+  max_steps: 50
+  grad_tol: 1.0e-3
+  disp_tol: 1.0e-3
+  energy_tol: 1.0e-6
+
+engine:
+  type: qchem
+  method: b3lyp
+  basis: 6-31g*
+  charge: 0
+  multiplicity: 1
+  template: qm.grad
+  extra:
+    input_filename: qchem.inp
+    output_filename: qchem.out
+
+execution:
+  mode: serial
+  max_concurrent_images: 1
+  threads_per_image: 1
+
+qmmm:
+  enabled: true
+  qm_atoms: [0, 1, 2, 3]      # all four atoms of H2C=O are QM
+  mm_charges_file: mm_charges.xyzq
+  update_region_only: true     # only QM coordinates are updated during MEP
+  vdw_repulsion: true          # add UFF-based LJ repulsion to prevent over-polarization
+
+output:
+  run_dir: run-qchem-qmmm
+  checkpoint_every: 1
+  write_xyz_every: 1
+  write_table_every: 1

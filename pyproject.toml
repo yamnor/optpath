@@ -1,0 +1,53 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "optpath"
+version = "0.1.1"
+description = "Zero-temperature string method optimizer for MEP calculations"
+readme = "README.md"
+license = {text = "MIT"}
+authors = [
+  {name = "yamnor", email = "yamnor@gmail.com"},
+]
+keywords = ["MEP", "string method", "minimum energy path", "quantum chemistry", "ASE"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Scientific/Engineering :: Chemistry",
+  "License :: OSI Approved :: MIT License",
+  "Intended Audience :: Science/Research",
+]
+requires-python = ">=3.10"
+dependencies = [
+  "ase>=3.22",
+  "numpy>=1.26",
+  "pydantic>=2.0",
+  "PyYAML>=6.0",
+  "scipy>=1.11",
+  "chemcoord>=2.1",
+  "pandas>=2.0,<3.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.0"]
+pyscf = ["pyscf>=2.0"]
+
+[project.urls]
+Homepage = "https://github.com/yamnor/optpath"
+Documentation = "https://github.com/yamnor/optpath/blob/main/development/docs/user-guide.md"
+Issues = "https://github.com/yamnor/optpath/issues"
+
+[project.scripts]
+string = "optpath.cli:main"
+
+[tool.setuptools.package-data]
+optpath = ["py.typed"]
+
+[tool.setuptools.packages.find]
+include = ["optpath*"]
+exclude = ["archive*"]
+

@@ -1,0 +1,12 @@
+# MM point charges mimicking a water molecule near the carbonyl oxygen
+# Format: symbol  x(Å)  y(Å)  z(Å)  charge(e)
+#
+# The element symbol is used to look up UFF vdW parameters for QM-MM
+# Lennard-Jones repulsion (enabled by default via qmmm.vdw_repulsion: true).
+#
+# System: H2C=O (QM, atoms 0-3) embedded in a fixed-charge water environment.
+# The MM water oxygen is placed ~2.8 Å from the QM oxygen along -x.
+#
+O  -2.800   0.000   0.000   -0.834
+H  -2.300   0.760   0.000    0.417
+H  -2.300  -0.760   0.000    0.417

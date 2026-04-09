@@ -1,0 +1,2 @@
+"""Core algorithm package."""
+

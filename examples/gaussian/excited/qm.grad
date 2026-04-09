@@ -1,0 +1,8 @@
+%NProcShared=1
+%Mem=4GB
+#P TD(Root=1,NStates=3) B3LYP/6-31G* Force
+
+Ethylene TDDFT MEP
+
+0 1
+__geom__
